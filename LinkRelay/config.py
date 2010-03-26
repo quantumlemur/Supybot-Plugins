@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2010, quantumlemur
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,23 +34,7 @@ import supybot.registry as registry
 def configure(advanced):
     from supybot.questions import output, expect, anything, something, yn
     conf.registerPlugin('LinkRelay', True)
-    if yn('Would you like to Relay between any channels?'):
-        channels = anything('What channels?  Separated them by spaces.')
-        conf.supybot.plugins.LinkRelay.channels.set(channels)
-    if yn('Would you like to use color to distinguish between nicks?'):
-        conf.supybot.plugins.LinkRelay.color.setValue(True)
-    output("""Right now there's no way to configure the actual connection to
-    the server.  What you'll need to do when the bot finishes starting up is
-    use the 'start' command followed by the 'connect' command.  Use the 'help'
-    command to see how these two commands should be used.""")
 
-class Ignores(registry.SpaceSeparatedListOf):
-    List = ircutils.IrcSet
-    Value = conf.ValidHostmask
-    
-class Networks(registry.SpaceSeparatedListOf):
-    List = ircutils.IrcSet
-    Value = registry.String
 
 LinkRelay = conf.registerPlugin('LinkRelay')
 conf.registerChannelValue(LinkRelay, 'color',
@@ -67,19 +51,6 @@ conf.registerChannelValue(LinkRelay, 'includeNetwork',
     registry.Boolean(True, """Determines whether the bot will include the
     network in Relayed PRIVMSGs; if you're only Relaying between two networks,
     it's somewhat redundant, and you may wish to save the space."""))
-conf.registerChannelValue(LinkRelay, 'punishOtherRelayBots',
-    registry.Boolean(False, """Determines whether the bot will detect other
-    bots Relaying and respond by kickbanning them."""))
-conf.registerGlobalValue(LinkRelay, 'channels',
-    conf.SpaceSeparatedSetOfChannels([], """Determines which channels the bot
-    will relay in."""))
-conf.registerChannelValue(LinkRelay.channels, 'joinOnAllNetworks',
-    registry.Boolean(True, """Determines whether the bot
-    will always join the channel(s) it Relays for on all networks the bot is
-    connected to."""))
-conf.registerChannelValue(LinkRelay, 'ignores',
-    Ignores([], """Determines what hostmasks will not be Relayed on a
-    channel."""))
 conf.registerChannelValue(LinkRelay, 'noticeNonPrivmsgs',
     registry.Boolean(False, """Determines whether the bot will used NOTICEs
     rather than PRIVMSGs for non-PRIVMSG Relay messages (i.e., joins, parts,

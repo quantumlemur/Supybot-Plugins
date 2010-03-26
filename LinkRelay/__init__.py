@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2005, Jeremiah Fincher
+# Copyright (c) 2010, quantumlemur
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 ###
 
 """
-Handles relaying between networks.
+Handles relaying between arbitrary channels on any network.
 """
 
 import supybot
@@ -36,9 +36,10 @@ import supybot.world as world
 
 # Use this for the version of this plugin.  You may wish to put a CVS keyword
 # in here if you're keeping the plugin in CVS or some similar system.
-__version__ = "%%VERSION%%"
+__version__ = ""
 
-__author__ = supybot.authors.jemfinch
+__author__ = supybot.Authors('quantumlemur', 'quantumlemur',
+        'quantumlemur@users.sourceforge.net')
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.

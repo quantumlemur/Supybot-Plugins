@@ -29,8 +29,7 @@
 ###
 
 """
-Add a description of the plugin (to be presented to the user inside the wizard)
-here.  This should describe *what* the plugin does.
+Looks up topics on Wikipedia and returns some info on them.
 """
 
 import supybot
@@ -41,7 +40,8 @@ import supybot.world as world
 __version__ = ""
 
 # XXX Replace this with an appropriate author or supybot.Author instance.
-__author__ = supybot.authors.unknown
+__author__ = supybot.Authors('quantumlemur', 'quantumlemur',
+        'quantumlemur@users.sourceforge.net')
 
 # This is a dictionary mapping supybot.Author instances to lists of
 # contributions.
