@@ -38,7 +38,7 @@ import supybot.world as world
 # in here if you're keeping the plugin in CVS or some similar system.
 __version__ = ""
 
-__author__ = supybot.Authors('quantumlemur', 'quantumlemur',
+__author__ = supybot.Author('quantumlemur', 'quantumlemur',
         'quantumlemur@users.sourceforge.net')
 
 # This is a dictionary mapping supybot.Author instances to lists of
