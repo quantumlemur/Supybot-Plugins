@@ -125,29 +125,7 @@ class Trivia(callbacks.Plugin):
                 self.reply('Oops!  I ran out of questions!')
                 self.active = False
             if not self.active:
-                self.reply('Trivia stopping.')
-                self.active = False
-                scores = self.roundscores.iteritems()
-                sorted = []
-                for i in range(0, len(self.roundscores)):
-                    item = scores.next()
-                    sorted.append(item)
-                def cmp(a, b):
-                    return b[1] - a[1]
-                sorted.sort(cmp)
-                max = 3
-                if len(sorted) < max:
-                    max = len(sorted)
-#                self.reply('max: %d.  len: %d' % (max, len(sorted)))
-                s = 'Top finishers: '
-                if max > 0:
-                    recipients = []
-                    maxp = sorted[0][1]
-                    for i in range(0, max):
-                        item = sorted[i]
-                        s = '%s %s %s.' % (s, item[0], item[1])
-                    self.reply(s)
-                del self.games[self.channel]
+                self.stop()
                 return
             self.hints = 0
             self.num -= 1
@@ -163,6 +141,36 @@ class Trivia(callbacks.Plugin):
             eventTime = time.time() + self.registryValue('timeout', self.channel) / (self.registryValue('numHints', self.channel) + 1)
             if self.active:
                 schedule.addEvent(event, eventTime, 'next_%s' % self.channel)
+
+
+        def stop(self):
+            self.reply('Trivia stopping.')
+            self.active = False
+            try:
+                schedule.removeEvent('next_%s' % self.channel)
+            except KeyError:
+                pass
+            scores = self.roundscores.iteritems()
+            sorted = []
+            for i in range(0, len(self.roundscores)):
+                item = scores.next()
+                sorted.append(item)
+            def cmp(a, b):
+                return b[1] - a[1]
+            sorted.sort(cmp)
+            max = 3
+            if len(sorted) < max:
+                max = len(sorted)
+#                self.reply('max: %d.  len: %d' % (max, len(sorted)))
+            s = 'Top finishers: '
+            if max > 0:
+                recipients = []
+                maxp = sorted[0][1]
+                for i in range(0, max):
+                    item = sorted[i]
+                    s = '%s %s %s.' % (s, item[0], item[1])
+                self.reply(s)
+            del self.games[self.channel]
         
 
         def timedEvent(self):
@@ -212,7 +220,7 @@ class Trivia(callbacks.Plugin):
 
 
         def reply(self, s):
-            self.irc.reply(s)
+            self.irc.queueMsg(ircmsgs.privmsg(self.channel, s))
 
 
         def writeScores(self):
@@ -279,9 +287,11 @@ class Trivia(callbacks.Plugin):
         except KeyError:
             pass
         if channel in self.games:
-            self.games[channel].active = False
-            del self.games[channel]
-            irc.reply('Trivia stopped')
+            if self.games[channel].active:
+                self.games[channel].stop()
+            else:
+                del self.games[channel]
+                irc.reply('Trivia stopped')
         else:
             irc.noReply()
     strivia = wrap(strivia, ['channel'])    
