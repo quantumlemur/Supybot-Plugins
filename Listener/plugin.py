@@ -46,6 +46,7 @@ class Listener(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Listener, self)
         self.__parent.__init__(irc)
+#    def start(self, irc, msg, args):
         self.irc = irc
         self.buffer = ''
         self.channel = '#testytest'  # set this
@@ -53,6 +54,7 @@ class Listener(callbacks.Plugin):
         self.port = 56789  # ...and this.
         self.listenerThread = self.ListeningThread(self.irc, self.channel, self.host, self.port)
         self.listenerThread.start()
+#    start = wrap(start)
 
 
     class ListeningThread(threading.Thread):
