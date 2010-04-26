@@ -74,7 +74,7 @@ class Trivia(callbacks.Plugin):
 
 
     def doPrivmsg(self, irc, msg):
-        channel = string.lower(msg.args[0])
+        channel = ircutils.toLower(msg.args[0])
         if not irc.isChannel(channel):
             return
         if callbacks.addressed(irc.nick, msg):
@@ -262,7 +262,7 @@ class Trivia(callbacks.Plugin):
 #        elif num > 100:
 #            irc.reply('sorry, for now, you can\'t start games with more than 100 questions :(')
 #            num = 100
-        channel = string.lower(channel)
+        channel = ircutils.toLower(channel)
         if channel in self.games:
             if not self.games[channel].active:
                 del self.games[channel]
@@ -285,7 +285,7 @@ class Trivia(callbacks.Plugin):
         """[<channel>]
 
         Stops a running game of trivia.  <channel> is only necessary if the message isn't sent in the channel itself."""
-        channel = string.lower(channel)
+        channel = ircutils.toLower(channel)
         try:
             schedule.removeEvent('next_%s' % channel)
         except KeyError:
