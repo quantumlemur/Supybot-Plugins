@@ -205,6 +205,8 @@ class Trivia(callbacks.Plugin):
                 dist = self.DL(str.lower(msg.args[1]), str.lower(ans))
                 if dist <= len(ans)/self.registryValue('flexibility', self.channel):
                     correct = True
+#                if self.registryValue('debug'):
+#                    self.reply('Distance: %d' % dist)
             if correct:
                 if not msg.nick in self.scores:
                     self.scores[msg.nick] = 0
@@ -260,6 +262,7 @@ class Trivia(callbacks.Plugin):
 #        elif num > 100:
 #            irc.reply('sorry, for now, you can\'t start games with more than 100 questions :(')
 #            num = 100
+        channel = string.lower(channel)
         if channel in self.games:
             if not self.games[channel].active:
                 del self.games[channel]
@@ -282,6 +285,7 @@ class Trivia(callbacks.Plugin):
         """[<channel>]
 
         Stops a running game of trivia.  <channel> is only necessary if the message isn't sent in the channel itself."""
+        channel = string.lower(channel)
         try:
             schedule.removeEvent('next_%s' % channel)
         except KeyError:
