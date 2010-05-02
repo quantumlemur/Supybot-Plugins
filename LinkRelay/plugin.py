@@ -160,7 +160,7 @@ class LinkRelay(callbacks.Plugin):
         channel = triggerMsg.args[0]
         nick = triggerMsg.nick
         for relay in self.relays:
-            if relay.channelRegex.match(channel) and relay.networkRegex.match(irc.network) and relay.networkRegex.search(s):
+            if relay.channelRegex.match(channel) and relay.networkRegex.match(irc.network) and relay.messageRegex.search(s):
                 if not relay.hasIRC:
                     self.log.info('LinkRelay:  IRC %s not yet scraped.' % relay.targetNetwork)
                 elif relay.targetIRC.zombie:
