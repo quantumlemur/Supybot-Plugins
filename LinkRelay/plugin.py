@@ -44,11 +44,12 @@ class LinkRelay(callbacks.Plugin):
     noIgnore = True
     threaded = True
     
-    # put a list of all the relays that you want to add here
-    # syntax is [sourceChannel, sourceNetwork, targetChannel, targetNetwork]
+    # Put a list of all the relays that you want to add here.  Only messages
+    # matching the regex will be relayed. 
+    # syntax is [sourceChannel, sourceNetwork, targetChannel, targetNetwork, regex]
     relaysToAdd = [
-            #['#supybot', 'freenode', '#supybot-bots', 'freenode'],
-            #['#supybot-bots', 'freenode', '#supybot', 'freenode']
+            #['#supybot', 'freenode', '#supybot-bots', 'freenode', ''],
+            #['#supybot-bots', 'freenode', '#supybot', 'freenode', '']
             ]
      
     # include any nick substitutions that you want to make here
@@ -60,13 +61,14 @@ class LinkRelay(callbacks.Plugin):
 
 
     class Relay():
-        def __init__(self, sourceChannel, sourceNetwork, targetChannel, targetNetwork, channelRegex, networkRegex):
+        def __init__(self, sourceChannel, sourceNetwork, targetChannel, targetNetwork, channelRegex, networkRegex, messageRegex):
             self.sourceChannel = sourceChannel
             self.sourceNetwork = sourceNetwork
             self.targetChannel = targetChannel
             self.targetNetwork = targetNetwork
             self.channelRegex = channelRegex
             self.networkRegex = networkRegex
+            self.messageRegex = messageRegex
             self.hasIRC = False
 
 
@@ -75,7 +77,7 @@ class LinkRelay(callbacks.Plugin):
         self.__parent.__init__(irc)
         self.relays = []
         for relay in self.relaysToAdd:
-            self.relays.append(self.Relay(relay[0], relay[1], relay[2], relay[3], re.compile('^%s$' % relay[0], re.I), re.compile('^%s$' % relay[1])))
+            self.relays.append(self.Relay(relay[0], relay[1], relay[2], relay[3], re.compile('^%s$' % relay[0], re.I), re.compile('^%s$' % relay[1]), re.compile(relay[4])))
         for IRC in world.ircs:
             self.addIRC(IRC)
 
@@ -158,7 +160,7 @@ class LinkRelay(callbacks.Plugin):
         channel = triggerMsg.args[0]
         nick = triggerMsg.nick
         for relay in self.relays:
-            if relay.channelRegex.match(channel) and relay.networkRegex.match(irc.network):
+            if relay.channelRegex.match(channel) and relay.networkRegex.match(irc.network) and relay.networkRegex.search(s):
                 if not relay.hasIRC:
                     self.log.info('LinkRelay:  IRC %s not yet scraped.' % relay.targetNetwork)
                 elif relay.targetIRC.zombie:
