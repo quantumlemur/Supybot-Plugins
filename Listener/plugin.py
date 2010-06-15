@@ -31,6 +31,7 @@
 import socket
 import threading
 import supybot.utils as utils
+import supybot.world as world
 from supybot.commands import *
 import supybot.plugins as plugins
 import supybot.ircmsgs as ircmsgs
@@ -46,28 +47,28 @@ class Listener(callbacks.Plugin):
     def __init__(self, irc):
         self.__parent = super(Listener, self)
         self.__parent.__init__(irc)
-#    def start(self, irc, msg, args):
-        self.irc = irc
         self.buffer = ''
-        self.channel = '#testytest'  # set this
+        self.channel = '#supybot-bots'  # set this
+        self.network = 'freenode' # ...and this
         self.host = 'localhost'  # ...and this
         self.port = 56789  # ...and this.
-        self.listenerThread = self.ListeningThread(self.irc, self.channel, self.host, self.port)
+        self.listenerThread = self.ListeningThread(self.network, self.channel, self.host, self.port)
         self.listenerThread.start()
-#    start = wrap(start)
 
 
     class ListeningThread(threading.Thread):
-        def __init__(self, irc, channel, host, port):
+        def __init__(self, network, channel, host, port):
             threading.Thread.__init__(self)
-            self.irc = irc
+            self.network
             self.channel = channel
             self.host = host
             self.port = port
             self.buffer = ''
             self.active = True
             self.listener = socket.socket()
-            self.listener.settimeout(2)
+            self.listener.settimeout(1)
+            self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
             self.listener.bind((self.host, self.port))
             self.listener.listen(4)
 
@@ -80,20 +81,23 @@ class Listener(callbacks.Plugin):
                 except IOError:
                     pass
                 if self.buffer:
-                    self.irc.queueMsg(ircmsgs.privmsg(self.channel, self.buffer))
+                    for IRC in world.ircs:
+                        if IRC.network == self.network:
+                            IRC.queueMsg(ircmsgs.privmsg(self.channel, self.buffer))
                     self.buffer = ''
             self.listener.close()
-
-        def stop(self):
-            self.active = False
 
 
     def stop(self, irc, msg, args):
         """takes no arguments
 
         Tries to close the listening socket"""
-        self.listenerThread.stop()
+        self.listenerThread.active = False
     stop = wrap(stop)
+
+    def die(self):
+        self.listenerThread.active = False
+        self.listenerThread.listener.close()
 
 Class = Listener
 
