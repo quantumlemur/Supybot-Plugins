@@ -28,6 +28,7 @@
 
 ###
 
+import time
 import socket
 import threading
 import supybot.utils as utils
@@ -48,8 +49,8 @@ class Listener(callbacks.Plugin):
         self.__parent = super(Listener, self)
         self.__parent.__init__(irc)
         self.buffer = ''
-        self.channel = '#supybot-bots'  # set this
-        self.network = 'freenode' # ...and this
+        self.channel = '#testytest'  # set this
+        self.network = 'forpirates' # ...and this
         self.host = 'localhost'  # ...and this
         self.port = 56789  # ...and this.
         self.listenerThread = self.ListeningThread(self.network, self.channel, self.host, self.port)
@@ -59,16 +60,15 @@ class Listener(callbacks.Plugin):
     class ListeningThread(threading.Thread):
         def __init__(self, network, channel, host, port):
             threading.Thread.__init__(self)
-            self.network
+            self.network = network
             self.channel = channel
             self.host = host
             self.port = port
             self.buffer = ''
             self.active = True
             self.listener = socket.socket()
-            self.listener.settimeout(1)
+            self.listener.settimeout(0.5)
             self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            self.listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
             self.listener.bind((self.host, self.port))
             self.listener.listen(4)
 
@@ -98,6 +98,7 @@ class Listener(callbacks.Plugin):
     def die(self):
         self.listenerThread.active = False
         self.listenerThread.listener.close()
+        time.sleep(2)
 
 Class = Listener
 
