@@ -49,8 +49,8 @@ class Listener(callbacks.Plugin):
         self.__parent = super(Listener, self)
         self.__parent.__init__(irc)
         self.buffer = ''
-        self.channel = '#testytest'  # set this
-        self.network = 'forpirates' # ...and this
+        self.channel = '#supybot-bots'  # set this
+        self.network = 'freenode' # ...and this
         self.host = 'localhost'  # ...and this
         self.port = 56789  # ...and this.
         self.listenerThread = self.ListeningThread(self.network, self.channel, self.host, self.port)
