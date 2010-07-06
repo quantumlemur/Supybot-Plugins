@@ -52,7 +52,11 @@ class Wikipedia(callbacks.Plugin):
 
         Returns the first paragraph of a Wikipedia article"""
 # first, we get the page
-        article = utils.web.getUrl('http://en.wikipedia.org/wiki/Special:Search?search=%s' % urllib.quote_plus(search))
+        try:
+            article = utils.web.getUrl('http://en.wikipedia.org/wiki/Special:Search?search=%s' % urllib.quote_plus(search))
+        except:
+            irc.reply('Hmm, looks like we broke Wikipedia.  Try again later?')
+            return
 # check if it gives a "Did you mean..." redirect
         if 'class="searchdidyoumean"' in article:
             redirect = re.search('class="searchdidyoumean">[^>]*><em>(.*?)</div>', article)

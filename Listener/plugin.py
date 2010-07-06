@@ -93,6 +93,8 @@ class Listener(callbacks.Plugin):
 
         Tries to close the listening socket"""
         self.listenerThread.active = False
+        self.listenerThread.listener.close()
+        irc.replySuccess()
     stop = wrap(stop)
 
     def die(self):
