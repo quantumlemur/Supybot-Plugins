@@ -89,6 +89,14 @@ class Wikipedia(callbacks.Plugin):
         article = re.sub('<p><br /></p>', '', article)
 # I hope this doesn't take out anything it shouldn't...
         article = re.sub('<p><i>For other uses of ', '', article)
+# check if it's a disambiguation page
+        if re.search('This <a href="[^>]*>disambiguation</a> page lists articles associated with the same title', article):
+            irc.reply('"%s" leads to a disambiguation page, so it would be kind of hard to list the results from it in IRC.  I\'d suggest checking out the page yourself: %s' % (search, addr))
+            return
+# or just as bad, a page listing events in that year
+        elif re.search('This article is about the year [\d]*\.  For the [a-zA-Z ]* [\d]*, see', article):
+            irc.reply('"%s" is a page full of events that happened in that year.  If you were looking for information about the number itself, try searching for "%s_(number)", but don\'t expect anything useful...' % (search, search))
+            return
 # remove the coordinates if the article includes them
         coord = article.find('title="Geographic coordinate system">')
         p = article.find('<p>')
@@ -112,22 +120,15 @@ class Wikipedia(callbacks.Plugin):
             article = article[tag.end():]
         if self.registryValue('debug'):
             irc.reply('\x0314p at %s, /p at %s' % (article.find('<p>'), article.find('</p>')))
-# check if it's a disambiguation page
-        if re.search('This <a href="[^>]*>disambiguation</a> page lists articles associated with the same title', article):
-            irc.reply('"%s" leads to a disambiguation page, so it would be kind of hard to list the results from it in IRC.  I\'d suggest checking out the page yourself: %s' % (search, addr))
-# or just as bad, a page listing events in that year
-        elif re.search('This article is about the year [\d]*\.  For the [a-zA-Z ]* [\d]*, see', article):
-            irc.reply('"%s" is a page full of events that happened in that year.  If you were looking for information about the number itself, try searching for "%s_(number)", but don\'t expect anything useful...' % (search, search)) 
-        else:
-# finally, isolate the first proper paragraph and strinp the HTML
-            article = article[article.find('<p>'):article.find('</p>')]
-            article = utils.web.htmlToText(article, tagReplace="")
+# finally, isolate the first proper paragraph and strip the HTML
+        article = article[article.find('<p>'):article.find('</p>')]
+        article = utils.web.htmlToText(article, tagReplace="")
 # remove any citations from the paragraph
-            article = re.sub('\[\d*\]', '', article)
-            article = re.sub('\[citation needed\]', '', article)
+        article = re.sub('\[\d*\]', '', article)
+        article = re.sub('\[citation needed\]', '', article)
 # and finally, return what we've got
-            irc.reply(addr)
-            irc.reply(article)
+        irc.reply(addr)
+        irc.reply(article)
     wiki = wrap(wiki, ['text'])
 
 Class = Wikipedia
