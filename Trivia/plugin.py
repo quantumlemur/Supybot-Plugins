@@ -83,7 +83,7 @@ class Trivia(callbacks.Plugin):
             self.games[channel].answer(msg)
 
     
-    class Game():
+    class Game:
         def __init__(self, irc, channel, num, registryValue, games, scores, scorefile):
             self.rng = random.Random()
             self.rng.seed()
