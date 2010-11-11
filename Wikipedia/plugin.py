@@ -59,7 +59,7 @@ class Wikipedia(callbacks.Plugin):
             return
 # check if it gives a "Did you mean..." redirect
         if 'class="searchdidyoumean"' in article:
-            redirect = re.search('class="searchdidyoumean">[^>]*><em>(.*?)</div>', article)
+            redirect = re.search('class="searchdidyoumean">[^>]*title="Special:Search">(.*?)</div>', article)
             redirect = redirect.group(1)
             redirect = utils.web.htmlToText(redirect, tagReplace="")
             irc.reply('I didn\'t find anything for "%s". Did you mean "%s"?' % (search, redirect))
